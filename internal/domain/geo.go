@@ -11,8 +11,6 @@ type Address struct {
 
 // GeoProvider определяет интерфейс для работы с геоданными
 type GeoProvider interface {
-	// AddressSearch ищет адреса по строке запроса
 	AddressSearch(input string) ([]*Address, error)
-	// GeoCode получает адрес по координатам
 	GeoCode(lat, lng string) ([]*Address, error)
 }

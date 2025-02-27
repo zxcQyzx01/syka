@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"net/http"
 	"syka/internal/controller"
 	"syka/internal/service"
 
@@ -32,14 +31,4 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 			r.Post("/geocode", h.geoController.Geocode)
 		})
 	})
-}
-
-func (h *Handler) SearchAddress(w http.ResponseWriter, r *http.Request) {
-	// Логика обработки запроса
-	w.Write([]byte("SearchAddress"))
-}
-
-func (h *Handler) GeocodeAddress(w http.ResponseWriter, r *http.Request) {
-	// Логика обработки запроса
-	w.Write([]byte("GeocodeAddress"))
 }

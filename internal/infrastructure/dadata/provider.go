@@ -8,8 +8,8 @@ import (
 	"net/url"
 	"strings"
 
-	"syka/internal/domain" // Обновите путь к домену
-	"syka/internal/models" // Обновите путь к модели
+	"syka/internal/domain"
+	"syka/internal/models"
 
 	"github.com/ekomobile/dadata/v2/api/suggest"
 	"github.com/ekomobile/dadata/v2/client"

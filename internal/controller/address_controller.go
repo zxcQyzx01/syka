@@ -21,22 +21,27 @@ func NewAddressController(geoService service.GeoServicer, responder customhttp.R
 	}
 }
 
+// handleError обрабатывает ошибки и отправляет ответ клиенту
+func (c *AddressController) handleError(w http.ResponseWriter, status int, message string) {
+	c.responder.Error(w, status, message)
+}
+
 // Search обрабатывает запросы на поиск адресов
 func (c *AddressController) Search(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		c.responder.Error(w, http.StatusBadRequest, "Неверные параметры запроса")
+		c.handleError(w, http.StatusBadRequest, "Неверные параметры запроса")
 		return
 	}
 
 	query := r.Form.Get("query")
 	if query == "" {
-		c.responder.Error(w, http.StatusBadRequest, "Параметр 'query' не предоставлен")
+		c.handleError(w, http.StatusBadRequest, "Параметр 'query' не предоставлен")
 		return
 	}
 
 	result, err := c.geoService.Search(query)
 	if err != nil {
-		c.responder.Error(w, http.StatusInternalServerError, "Ошибка поиска адреса")
+		c.handleError(w, http.StatusInternalServerError, "Ошибка поиска адреса")
 		return
 	}
 
@@ -53,18 +58,18 @@ func (c *AddressController) Geocode(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		c.responder.Error(w, http.StatusBadRequest, "Неверный формат запроса")
+		c.handleError(w, http.StatusBadRequest, "Неверный формат запроса")
 		return
 	}
 
 	if req.Lat == "" || req.Lng == "" {
-		c.responder.Error(w, http.StatusBadRequest, "Параметры 'lat' и 'lng' обязательны")
+		c.handleError(w, http.StatusBadRequest, "Параметры 'lat' и 'lng' обязательны")
 		return
 	}
 
 	result, err := c.geoService.Geocode(req.Lat, req.Lng)
 	if err != nil {
-		c.responder.Error(w, http.StatusInternalServerError, "Ошибка геокодирования")
+		c.handleError(w, http.StatusInternalServerError, "Ошибка геокодирования")
 		return
 	}
 

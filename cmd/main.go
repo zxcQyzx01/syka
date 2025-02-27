@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"syka/internal/config"
@@ -14,19 +13,39 @@ import (
 )
 
 func main() {
-	r := chi.NewRouter()
+	// Загрузка конфигурации
+	config, err := loadConfig()
+	if err != nil {
+		log.Fatalf("Ошибка загрузки конфигурации: %v", err)
+	}
 
-	config := config.LoadConfig()
-	fmt.Println(config)
+	// Инициализация провайдера
+	provider, err := initProvider(config)
+	if err != nil {
+		log.Fatalf("Ошибка инициализации провайдера: %v", err)
+	}
 
-	provider := dadata.NewProvider(config.ApiKey, config.SecretKey)
-	fmt.Println(provider)
-
+	// Инициализация сервисов и обработчиков
 	geoService := service.NewGeoService(provider)
 	responder := customhttp.NewResponder()
 	h := handler.NewHandler(geoService, responder)
 
-	h.RegisterRoutes(r)
+	// Регистрация маршрутов
+	r := chi.NewRouter()
+	registerRoutes(r, h)
 
+	// Запуск сервера
 	log.Fatal(http.ListenAndServe(":8080", r))
+}
+
+func loadConfig() (*config.Config, error) {
+	return config.LoadConfig(), nil
+}
+
+func initProvider(config *config.Config) (*dadata.Provider, error) {
+	return dadata.NewProvider(config.ApiKey, config.SecretKey), nil
+}
+
+func registerRoutes(r *chi.Mux, h *handler.Handler) {
+	h.RegisterRoutes(r)
 }
